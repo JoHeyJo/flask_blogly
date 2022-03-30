@@ -15,5 +15,62 @@ debug = DebugToolbarExtension(app)
 connect_db(app)
 db.create_all()
 
-@app.get("'")
-def show_home()
+@app.get("/")
+def show_home():
+    users = User.query.all()
+    return render_template("index.html", users=users)
+
+@app.get("/users")
+def show_home():
+    users = User.query.all()
+    return render_template("index.html", users=users)
+
+@app.get("/users/new")
+def show_new_user_form():
+    return render_template("new_user_form.html")
+
+
+@app.post("/users/new")
+def add_user():
+    first_name = request.form["first-name"]
+    last_name = request.form["last-name"]
+    img_url = request.form["image-url"]
+
+    user = User(first_name=first_name, last_name=last_name, img_url=img_url)
+    db.session.add(user)
+    db.session.commit()
+
+    return redirect("/users")
+
+@app.get("/users/<int: user_id>")
+def show_user(user_id):
+    user = User.query.get(user_id)
+    return render_template("user_detail.html", user=user)
+
+@app.get("/user/<int: user_id>/edit")
+def show_edit_user(user_id):
+    user = User.query.get(user_id)
+    return render_template("edit_user.html", user=user)
+
+@app.post("/user/<int: user_id>/edit")
+def edit_user(user_id):
+    first_name = request.form["first-name"]
+    last_name = request.form["last-name"]
+    img_url = request.form["image-url"]
+
+    user = User.query.get(user_id)
+
+    user.first_name = first_name
+    user.last_name = last_name
+    user.img_url = img_url
+
+    db.session.commit()
+
+@app.post("/user/<int: user_id>/delete")
+def edit_user(user_id):
+
+    user = User.query.get(user_id)
+
+    db.session.delete(user)
+    db.session.commit()
+
