@@ -21,7 +21,7 @@ def show_home():
     return render_template("index.html", users=users)
 
 @app.get("/users")
-def show_home():
+def show_users():
     users = User.query.all()
     return render_template("index.html", users=users)
 
@@ -42,17 +42,17 @@ def add_user():
 
     return redirect("/users")
 
-@app.get("/users/<int: user_id>")
+@app.get("/users/<int:user_id>")
 def show_user(user_id):
     user = User.query.get(user_id)
     return render_template("user_detail.html", user=user)
 
-@app.get("/user/<int: user_id>/edit")
+@app.get("/user/<int:user_id>/edit")
 def show_edit_user(user_id):
     user = User.query.get(user_id)
     return render_template("edit_user.html", user=user)
 
-@app.post("/user/<int: user_id>/edit")
+@app.post("/user/<int:user_id>/edit")
 def edit_user(user_id):
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
@@ -66,11 +66,18 @@ def edit_user(user_id):
 
     db.session.commit()
 
-@app.post("/user/<int: user_id>/delete")
-def edit_user(user_id):
+    return render_template('user_detail.html', user=user)
+
+
+@app.post("/users/<int:user_id>/delete")
+def delete_user(user_id):
+    if "edit" in request.form:
+        return render_template("edit_user.html")
 
     user = User.query.get(user_id)
-
     db.session.delete(user)
     db.session.commit()
 
+    return redirect('/')
+    # users = User.query.all()
+    # return render_template("index.html", users=users)
