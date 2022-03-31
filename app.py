@@ -98,3 +98,27 @@ def delete_user(user_id):
     return redirect('/')
     # users = User.query.all()
     # return render_template("index.html", users=users)
+
+@app.get("/users/<int:user_id>/posts/new")
+def show_new_post_form(user_id):
+    """"""
+    user = User.query.get_or_404(user_id)   
+
+    return render_template("new_post_form.html", user=user)
+
+
+@app.post("/users/<int:user_id>/posts/new")
+def show_new_post_form(user_id):
+    """"""
+    title = request.form["title"]
+    post_content = request.form["post_content"]
+
+    post = Post(title=title, content=post_content, user_id=user_id)
+    db.session.add(post)
+    db.session.commit()
+
+    user = User.query.get_or_404(user_id)   
+    posts = Post.query.all()
+
+    return render_template("user_detail", user=user, posts=posts)
+
