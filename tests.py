@@ -33,10 +33,10 @@ class UserViewTestCase(TestCase):
 
         test_user = User(first_name="test_first",
                                     last_name="test_last",
-                                    image_url=None)
+                                    img_url=None)
 
         second_user = User(first_name="test_first_two", last_name="test_last_two",
-                           image_url=None)
+                           img_url=None)
 
         db.session.add_all([test_user, second_user])
         db.session.commit()
@@ -68,24 +68,16 @@ class UserViewTestCase(TestCase):
 
     def test_new_user_redirection(self):
         with self.client as c:
-            resp = c.post("/users/new", data={"first_name": "Yuri", "last_name": "Belo", "image_url": None})
-
-            self.assertEqual(resp.status_code, 302)
-            self.assertEqual(resp.location, "http://localhost:5000/users")
-            
-           
-    def test_new_user_redirection_followed(self):
-        with self.client as c:
-            resp = c.get("/users", follow_redirects=True)
+            resp = c.post("/users/new", data={"first-name": "Yuri", "last-name": "Belo", "img-url": ""},follow_redirects=True)
             html = resp.get_data(as_text=True)
-
+            
             self.assertEqual(resp.status_code, 200)
             self.assertIn("Yuri", html)
             
 
     def test_userid_path(self):
         with self.client as c:
-            resp = c.get("/users/1")
+            resp = c.get(f"/users/{self.user_id}")
             self.assertEqual(resp.status_code, 200)
             html = resp.get_data(as_text=True)
             self.assertIn("test user id", html)
