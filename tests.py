@@ -58,3 +58,36 @@ class UserViewTestCase(TestCase):
             html = resp.get_data(as_text=True)
             self.assertIn("test_first", html)
             self.assertIn("test_last", html)
+
+    def test_new_user(self):
+        with self.client as c:
+            resp = c.get("/users/new")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("test new user", html)
+
+    def test_new_user_redirection(self):
+        with self.client as c:
+            resp = c.post("/users/new", data={"first_name": "Yuri", "last_name": "Belo", "image_url": None})
+
+            self.assertEqual(resp.status_code, 302)
+            self.assertEqual(resp.location, "http://localhost:5000/users")
+            
+           
+    def test_new_user_redirection_followed(self):
+        with self.client as c:
+            resp = c.get("/users", follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("Yuri", html)
+            
+
+    def test_userid_path(self):
+        with self.client as c:
+            resp = c.get("/users/1")
+            self.assertEqual(resp.status_code, 200)
+            html = resp.get_data(as_text=True)
+            self.assertIn("test user id", html)
+
+    
